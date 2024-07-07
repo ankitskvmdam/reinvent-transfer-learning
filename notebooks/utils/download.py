@@ -16,8 +16,7 @@ def get_api_key() -> str:
         api key.
     """
 
-    api_key_path = os.path.join(".", ".api_key")
-
+    api_key_path = os.path.join(os.path.dirname(__file__), ".api_key")
     if not os.path.exists(api_key_path):
         return ""
 
@@ -59,11 +58,11 @@ def download_3d_similar_molecules(query_smiles: str, save_path: str) -> bool:
             "https://api.cheese.themama.ai/molsearch",
             {
                 "search_input": query_smiles,
-                "search_type": "fast",
-                "n_neighbors": 100,
+                "search_type": "morgan",
+                "n_neighbors": 500,
                 "search_quality": "fast",
-                "descriptors": True,
-                "properties": True,
+                "descriptors": False,
+                "properties": False,
                 "filter_molecules": False,
             },
             headers={"Authorization": f"Bearer {api_key}"},
@@ -71,8 +70,8 @@ def download_3d_similar_molecules(query_smiles: str, save_path: str) -> bool:
         ).json()
 
         with open(save_path, "w") as writer:
-            json.dump(res, writer)
-
+            json.dump(res, writer, indent=2)
+        return True
     except Exception as e:
         print(e)
 
