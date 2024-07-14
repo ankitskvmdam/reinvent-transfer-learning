@@ -52,27 +52,33 @@ def download_3d_similar_molecules(query_smiles: str, save_path: str) -> bool:
         print("Directory doesn't exist.")
         return False
 
+    search_types = ['morgan', 'espsim_electrostatic', 'espsim_shape', 'consensus']
+    responses = []
+
     try:
         urllib3.disable_warnings()
-        res = requests.get(
-            "https://api.cheese.themama.ai/molsearch",
-            {
-                "search_input": query_smiles,
-                "search_type": "morgan",
-                "n_neighbors": 500,
-                "search_quality": "fast",
-                "descriptors": False,
-                "properties": False,
-                "filter_molecules": False,
-            },
-            headers={"Authorization": f"Bearer {api_key}"},
-            verify=False,
-        ).json()
+        for search_type in search_types:
+            res = requests.get(
+                "https://api.cheese.themama.ai/molsearch",
+                {
+                    "search_input": query_smiles,
+                    "search_type": search_type,
+                    "n_neighbors": 100,
+                    "search_quality": "very accurate",
+                    "descriptors": False,
+                    "properties": True,
+                    "filter_molecules": False,
+                },
+                headers={"Authorization": f"Bearer {api_key}"},
+                verify=False,
+            ).json()
 
-        with open(save_path, "w") as writer:
-            json.dump(res, writer, indent=2)
-        return True
+            responses.extend(res['neighbors'])
+
     except Exception as e:
         print(e)
-
-    return False
+        return False
+    
+    with open(save_path, "w") as writer:
+        json.dump(responses, writer, indent=2)
+    return True
