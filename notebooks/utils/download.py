@@ -66,7 +66,7 @@ def download_3d_similar_molecules(query_smiles: str, save_path: str) -> bool:
                     "n_neighbors": 100,
                     "search_quality": "very accurate",
                     "descriptors": False,
-                    "properties": True,
+                    "properties": False,
                     "filter_molecules": False,
                 },
                 headers={"Authorization": f"Bearer {api_key}"},
