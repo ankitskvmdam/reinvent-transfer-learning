@@ -79,6 +79,15 @@ def download_3d_similar_molecules(query_smiles: str, save_path: str) -> bool:
         print(e)
         return False
     
+    formatted_response = []
+
+    for res in responses:
+        formatted_response.append({
+            'smiles': res['smiles'],
+            'identifier': res['zinc_id'],
+            'similarity': res['Morgan Tanimoto']
+        })
+
     with open(save_path, "w") as writer:
-        json.dump(responses, writer, indent=2)
+        json.dump(formatted_response, writer, indent=2)
     return True
